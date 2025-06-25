@@ -82,14 +82,6 @@ struct EventDetailView: View {
         }
         .navigationTitle(viewModel.event.title)
         .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .primaryAction) {
-                // Кнопка-ссылка на экран чата
-                NavigationLink(destination: EventChatView(event: viewModel.event)) {
-                    Image(systemName: "message.fill")
-                }
-            }
-        }
     }
     
     // Вспомогательная функция для кнопки RSVP, вынесена из body

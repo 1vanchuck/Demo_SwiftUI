@@ -1,57 +1,54 @@
+// file: EventRowView.swift
+
 import SwiftUI
 
 struct EventRowView: View {
     let event: Event
     
     var body: some View {
-        HStack(spacing: 16) {
-            // Картинка ивента
+        HStack(spacing: 12) {
+            // ИЗМЕНЕНИЕ: Аватар ивента теперь круглый
             AsyncImage(url: URL(string: event.imageURL ?? "")) { image in
                 image.resizable()
                     .aspectRatio(contentMode: .fill)
             } placeholder: {
-                // Заглушка, если картинки нет
                 Image(systemName: "photo")
                     .font(.title)
                     .foregroundColor(.secondary)
-                    .frame(width: 60, height: 60)
+                    .frame(width: 55, height: 55)
                     .background(Color.secondary.opacity(0.2))
             }
-            .frame(width: 60, height: 60)
-            .cornerRadius(8)
+            .frame(width: 55, height: 55)
+            .clipShape(Circle()) // Делаем аватар круглым
             
-            // Текстовая информация
+            // ИЗМЕНЕНИЕ: Текст теперь в две строки
             VStack(alignment: .leading, spacing: 4) {
                 Text(event.title)
                     .font(.headline)
                     .fontWeight(.bold)
                 
-                // TODO: В будущем здесь можно будет определять,
-                // вы создатель ("Hosting") или участник ("Going")
-                Text("You • Hosting")
+                // Заглушка для последнего сообщения
+                Text("Last message placeholder...")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
+                    .lineLimit(1) // Ограничиваем одной строкой
             }
             
-            Spacer() // Отодвигает кнопку "..." вправо
+            Spacer() // Отодвигает блок времени вправо
             
-            // Кнопка "больше опций"
-            Image(systemName: "ellipsis")
-                .foregroundColor(.secondary)
+            // ИЗМЕНЕНИЕ: Добавляем блок времени
+            VStack(alignment: .trailing, spacing: 4) {
+                // Заглушка для времени
+                Text("22:31")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                
+                // Здесь будет заглушка для счетчика непрочитанных
+                // Можно пока оставить пустым или добавить статический бейдж для вида
+            }
         }
-        .padding(12)
-        .background(Color(.secondarySystemBackground))
-        .cornerRadius(12)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        // Убираем фон и скругление, т.к. этим будет управлять List
     }
-}
-
-#Preview {
-    // Для превью создаем фейковый ивент
-    let previewEvent = Event(title: "Untitled Event",
-                             eventDate: Date(),
-                             locationName: "Someplace",
-                             creatorId: "123")
-    
-    return EventRowView(event: previewEvent)
-        .padding()
 }

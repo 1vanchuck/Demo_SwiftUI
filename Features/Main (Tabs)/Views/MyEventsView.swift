@@ -1,3 +1,5 @@
+// file: MyEventsView.swift
+
 import SwiftUI
 
 struct MyEventsView: View {
@@ -25,7 +27,7 @@ struct MyEventsView: View {
                     }
                 } else {
                     List {
-                        // ИЗМЕНЕНИЕ: Мы передаем замыкание onAction прямо здесь
+                        // Для каждой строки в списке мы передаем замыкание onAction
                         ForEach(viewModel.myEvents) { event in
                             MyEventsListRow(event: event) { action in
                                 // Вся логика обработки нажатий теперь здесь
@@ -34,6 +36,10 @@ struct MyEventsView: View {
                         }
                     }
                     .listStyle(.plain)
+                    // Основной маршрут навигации из списка теперь ведет напрямую в чат
+                    .navigationDestination(for: Event.self) { event in
+                        EventChatView(event: event)
+                    }
                     .refreshable {
                         if let userId = authManager.user?.uid {
                             await viewModel.fetchMyEvents(for: userId)
@@ -52,7 +58,7 @@ struct MyEventsView: View {
         }
     }
     
-    // Вспомогательная функция для обработки действий
+    // Вспомогательная функция для обработки действий из контекстного меню
     private func handle(action: EventAction, for event: Event) {
         switch action {
         case .delete:
@@ -69,7 +75,15 @@ struct MyEventsView: View {
 }
 
 #Preview {
-    MyEventsView()
-        .environmentObject(AuthManager())
-        .environmentObject(EventsViewModel())
+    // Для превью нужно предоставить окружение
+    let authManager = AuthManager()
+    let eventsViewModel = EventsViewModel()
+    
+    // Можно добавить фейковый ивент для отображения в превью
+    // let previewEvent = Event(title: "Preview Event", eventDate: Date(), locationName: "SwiftUI", creatorId: "previewUser")
+    // eventsViewModel.myEvents = [previewEvent]
+    
+    return MyEventsView()
+        .environmentObject(authManager)
+        .environmentObject(eventsViewModel)
 }

@@ -1,15 +1,8 @@
 import SwiftUI
 
 struct EnterNameAndDateView: View {
-    // 1. ИЗМЕНЕНИЕ: Получаем ViewModel из окружения
     @EnvironmentObject var viewModel: AuthViewModel
-    
-    @State private var name: String = ""
-    @State private var birthDate: Date = Calendar.current.date(byAdding: .year, value: -18, to: Date()) ?? Date()
-    
-    private func isFormValid() -> Bool {
-        return name.trimmingCharacters(in: .whitespaces).count >= 2
-    }
+    // Убираем локальные состояния, используем состояния из ViewModel
     
     var body: some View {
         ZStack {
@@ -18,12 +11,12 @@ struct EnterNameAndDateView: View {
                     .font(.largeTitle).fontWeight(.bold)
                     .padding(.bottom, 20)
                 
-                TextField("Your Name", text: $name)
+                TextField("Your Name", text: $viewModel.name)
                     .padding()
                     .background(Color(.secondarySystemBackground))
                     .cornerRadius(10)
                 
-                DatePicker("Your birthday", selection: $birthDate, in: ...Date(), displayedComponents: .date)
+                DatePicker("Your birthday", selection: $viewModel.birthDate, in: ...Date(), displayedComponents: .date)
                     .padding()
                     .background(Color(.secondarySystemBackground))
                     .cornerRadius(10)
@@ -32,21 +25,20 @@ struct EnterNameAndDateView: View {
                 
                 Button("Next") {
                     Task {
-                        await viewModel.saveUserNameAndBirthDate(name: name, birthDate: birthDate)
+                        await viewModel.saveUserNameAndBirthDate()
                     }
                 }
                 .fontWeight(.semibold)
                 .frame(maxWidth: .infinity)
                 .padding()
-                .background(isFormValid() ? Color.purple : Color.gray)
+                .background(viewModel.isProfileFormValid ? Color.purple : Color.gray)
                 .foregroundStyle(.white)
                 .cornerRadius(15)
-                .disabled(!isFormValid())
+                .disabled(!viewModel.isProfileFormValid)
             }
             .padding()
             .navigationBarBackButtonHidden(true)
             .navigationDestination(isPresented: $viewModel.shouldNavigateToAddProfilePic) {
-                // 2. ИЗМЕНЕНИЕ: Вызываем следующий экран БЕЗ viewModel
                 AddProfilePicView()
             }
             
@@ -61,7 +53,6 @@ struct EnterNameAndDateView: View {
 #Preview {
     NavigationStack {
         EnterNameAndDateView()
-            // 3. ИЗМЕНЕНИЕ: Для превью нужно вручную "положить" ViewModel в окружение
             .environmentObject(AuthViewModel())
     }
 }

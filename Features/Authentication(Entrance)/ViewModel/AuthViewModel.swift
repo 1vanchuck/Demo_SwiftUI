@@ -23,6 +23,26 @@ class AuthViewModel: ObservableObject {
     @Published var verificationCode = ""
     var isPhoneNumberValid: Bool { phoneNumber.filter { "0"..."9" ~= $0 }.count >= 10 }
     
+    // --- ONBOARDING PROFILE STATE ---
+    @Published var name: String = ""
+    @Published var birthDate: Date = Calendar.current.date(byAdding: .year, value: -18, to: Date()) ?? Date()
+    
+    var isProfileFormValid: Bool {
+        name.trimmingCharacters(in: .whitespaces).count >= 2
+    }
+    
+    // --- SIGN UP FORM VALIDATION ---
+    func isSignUpFormValid(confirmPassword: String) -> Bool {
+        Validators.isValidEmail(email) &&
+        password.count >= 8 &&
+        password == confirmPassword &&
+        email != password
+    }
+    // --- LOGIN FORM VALIDATION ---
+    var isLoginFormValid: Bool {
+        Validators.isValidEmail(email) && !password.isEmpty
+    }
+    
     // MARK: - Email Authentication
     
     func signUpWithFirebase(confirmPassword: String) {
@@ -80,8 +100,8 @@ class AuthViewModel: ObservableObject {
     }
     
     // MARK: - Profile Setup
-    
-    func saveUserNameAndBirthDate(name: String, birthDate: Date) async {
+    // Теперь saveUserNameAndBirthDate не принимает параметры, а использует состояния
+    func saveUserNameAndBirthDate() async {
         isLoading = true
         do {
             guard let userID = Auth.auth().currentUser?.uid else { isLoading = false; return }
