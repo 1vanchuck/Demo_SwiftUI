@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct EnterVerificationCodeView: View {
-    // ИЗМЕНЕНИЕ: Получаем ViewModel из окружения
     @EnvironmentObject var viewModel: AuthViewModel
     
     var body: some View {
@@ -43,9 +42,8 @@ struct EnterVerificationCodeView: View {
                 ProgressView().progressViewStyle(CircularProgressViewStyle(tint: .white))
             }
         }
-        // Навигация теперь привязана к флагу из нашего общего viewModel
         .navigationDestination(isPresented: $viewModel.shouldNavigateToProfileDetails) {
-            EnterNameAndDateView() // viewModel передастся через окружение
+            EnterNameAndDateView()
         }
     }
 }
@@ -53,7 +51,6 @@ struct EnterVerificationCodeView: View {
 #Preview {
     NavigationStack {
         EnterVerificationCodeView()
-            // Для превью нужно вручную "положить" ViewModel в окружение
             .environmentObject(AuthViewModel())
     }
 }

@@ -1,5 +1,3 @@
-// file: EventRowView.swift
-
 import SwiftUI
 
 struct EventRowView: View {
@@ -7,7 +5,7 @@ struct EventRowView: View {
     
     var body: some View {
         HStack(spacing: 12) {
-            // ИЗМЕНЕНИЕ: Аватар ивента теперь круглый
+            // The event avatar is now circular for a cleaner list view.
             AsyncImage(url: URL(string: event.imageURL ?? "")) { image in
                 image.resizable()
                     .aspectRatio(contentMode: .fill)
@@ -19,36 +17,33 @@ struct EventRowView: View {
                     .background(Color.secondary.opacity(0.2))
             }
             .frame(width: 55, height: 55)
-            .clipShape(Circle()) // Делаем аватар круглым
+            .clipShape(Circle())
             
-            // ИЗМЕНЕНИЕ: Текст теперь в две строки
+            // The main text is now structured in two lines for better readability.
             VStack(alignment: .leading, spacing: 4) {
                 Text(event.title)
                     .font(.headline)
                     .fontWeight(.bold)
                 
-                // Заглушка для последнего сообщения
+                // This could be updated with the actual last message from the chat.
                 Text("Last message placeholder...")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
-                    .lineLimit(1) // Ограничиваем одной строкой
+                    .lineLimit(1)
             }
             
-            Spacer() // Отодвигает блок времени вправо
+            Spacer()
             
-            // ИЗМЕНЕНИЕ: Добавляем блок времени
             VStack(alignment: .trailing, spacing: 4) {
-                // Заглушка для времени
-                Text("22:31")
+                // Placeholder for the timestamp of the last message.
+                Text("10:31 PM")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                 
-                // Здесь будет заглушка для счетчика непрочитанных
-                // Можно пока оставить пустым или добавить статический бейдж для вида
+                // An unread message indicator could be added here.
             }
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
-        // Убираем фон и скругление, т.к. этим будет управлять List
     }
 }

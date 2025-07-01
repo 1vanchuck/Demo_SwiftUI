@@ -2,14 +2,11 @@ import SwiftUI
 
 struct EnterPhoneNumberView: View {
     @Environment(\.dismiss) var dismiss
-    // Этот экран НАЧИНАЕТ флоу, поэтому он СОЗДАЕТ свой viewModel.
-    // Но мы передадим его дальше через окружение, а не вручную.
     @StateObject private var viewModel = AuthViewModel()
     @State private var isNavigationActive = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            // ... (весь UI остается без изменений) ...
             Text("Join the party")
                 .font(.largeTitle)
                 .fontWeight(.bold)
@@ -39,7 +36,6 @@ struct EnterPhoneNumberView: View {
         }
         .padding()
         .navigationBarBackButtonHidden(true)
-        // ИЗМЕНЕНИЕ: Убираем передачу viewModel в инициализатор
         .navigationDestination(isPresented: $isNavigationActive) {
             EnterVerificationCodeView()
         }
@@ -51,7 +47,11 @@ struct EnterPhoneNumberView: View {
                 }
             }
         }
-        // ВАЖНО: Делаем viewModel доступным для следующего экрана в иерархии
         .environmentObject(viewModel)
+    }
+}
+#Preview {
+    NavigationStack {
+        EnterPhoneNumberView()
     }
 }

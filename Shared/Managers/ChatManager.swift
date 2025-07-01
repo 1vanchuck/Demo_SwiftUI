@@ -6,7 +6,7 @@ final class ChatManager {
     static let shared = ChatManager()
     private init() {}
     
-    // Хелпер, который возвращает путь к подколлекции 'messages' для конкретного ивента
+    /// A helper function to get a reference to the 'messages' subcollection for a specific event.
     private func eventMessagesCollection(eventId: String) -> CollectionReference {
         Firestore.firestore(database: "partyapp")
             .collection("events")
@@ -14,10 +14,9 @@ final class ChatManager {
             .collection("messages")
     }
     
-    /// Отправляет новое сообщение в чат ивента.
+    /// Sends a new message to an event's chat.
     func sendMessage(text: String, eventId: String, sender: DBUser) async throws {
-        // ИСПРАВЛЕНИЕ: Используем 'id', который мы определили для протокола Identifiable.
-        // Так как он не опциональный, 'guard let' не нужен.
+        // We can safely use the non-optional `id` property from our Identifiable DBUser.
         let senderId = sender.id
         
         let message = ChatMessage(
@@ -32,14 +31,13 @@ final class ChatManager {
         try await eventMessagesCollection(eventId: eventId).addDocument(from: message)
     }
     
-    /// Начинает прослушивание сообщений для конкретного ивента в реальном времени.
-    /// Возвращает 'поток' (AsyncStream) сообщений.
+    /// Listens for real-time message updates for a specific event.
+    /// - Returns: An `AsyncStream` of message arrays.
     func listenForMessages(eventId: String) -> AsyncStream<[ChatMessage]> {
-        // AsyncStream - это современный способ работы с данными, которые приходят со временем.
         return AsyncStream { continuation in
-            // Создаем "слушателя", который будет срабатывать при любом изменении в коллекции сообщений
+            // Set up a snapshot listener to receive updates whenever the messages collection changes.
             let listener = eventMessagesCollection(eventId: eventId)
-                .order(by: "timestamp", descending: false) // Сортируем по времени
+                .order(by: "timestamp", descending: false) // Sort messages chronologically.
                 .addSnapshotListener { querySnapshot, error in
                     
                     guard let snapshot = querySnapshot else {
@@ -47,18 +45,18 @@ final class ChatManager {
                         return
                     }
                     
-                    // Декодируем все документы в массив объектов ChatMessage
+                    // Decode all documents into an array of ChatMessage objects.
                     let messages = snapshot.documents.compactMap { document in
                         try? document.data(as: ChatMessage.self)
                     }
                     
-                    // Отправляем новый массив сообщений в наш "поток"
+                    // Yield the new array to the stream.
                     continuation.yield(messages)
                 }
             
-            // Этот блок выполнится, когда мы перестанем "слушать" поток
+            // This closure is called when the stream is terminated.
             continuation.onTermination = { @Sendable _ in
-                // Отключаем "слушателя", чтобы не тратить ресурсы
+                // It's crucial to remove the listener to prevent resource leaks.
                 listener.remove()
                 print("Message listener removed for event \(eventId)")
             }

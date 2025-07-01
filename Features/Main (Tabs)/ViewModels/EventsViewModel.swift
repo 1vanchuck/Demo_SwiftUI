@@ -12,12 +12,10 @@ class EventsViewModel: ObservableObject {
     @Published var errorMessage: String?
     @Published var didCreateEvent = false
     
-    // Вспомогательное свойство, которое отфильтровывает ивенты для карты
     var eventsWithCoordinates: [Event] {
         allEvents.filter { $0.coordinates != nil }
     }
     
-    // Функция для получения ивентов текущего пользователя
     func fetchMyEvents(for userId: String) async {
         isLoading = true
         errorMessage = nil
@@ -29,7 +27,6 @@ class EventsViewModel: ObservableObject {
         isLoading = false
     }
     
-    // Функция для получения ВСЕХ ивентов для карты
     func fetchAllEvents() async {
         isLoading = true
         errorMessage = nil
@@ -41,7 +38,6 @@ class EventsViewModel: ObservableObject {
         isLoading = false
     }
     
-    // Функция создания ивента
     func createEvent(title: String, eventDate: Date, locationName: String, coordinates: GeoPoint?, description: String?, image: UIImage?, creatorId: String, participantLimit: Int?) async {
         isLoading = true
         errorMessage = nil
@@ -66,7 +62,6 @@ class EventsViewModel: ObservableObject {
         isLoading = false
     }
     
-    // Функция для выхода из ивента
     func leaveEvent(event: Event, userId: String) async {
         isLoading = true
         errorMessage = nil
@@ -79,7 +74,6 @@ class EventsViewModel: ObservableObject {
         isLoading = false
     }
 
-    // Функция для удаления ивента
     func deleteEvent(event: Event) async {
         isLoading = true
         errorMessage = nil

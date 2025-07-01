@@ -18,12 +18,12 @@ class AuthViewModel: ObservableObject {
     @Published var shouldNavigateToMainApp = false
     @Published var showVerificationAlert = false
     
-    // Для телефона
+    // Phone Authentication State
     @Published var phoneNumber = ""
     @Published var verificationCode = ""
     var isPhoneNumberValid: Bool { phoneNumber.filter { "0"..."9" ~= $0 }.count >= 10 }
     
-    // --- ONBOARDING PROFILE STATE ---
+    // Onboarding Profile State
     @Published var name: String = ""
     @Published var birthDate: Date = Calendar.current.date(byAdding: .year, value: -18, to: Date()) ?? Date()
     
@@ -31,14 +31,15 @@ class AuthViewModel: ObservableObject {
         name.trimmingCharacters(in: .whitespaces).count >= 2
     }
     
-    // --- SIGN UP FORM VALIDATION ---
+    // MARK: - Form Validation
+    
     func isSignUpFormValid(confirmPassword: String) -> Bool {
         Validators.isValidEmail(email) &&
         password.count >= 8 &&
         password == confirmPassword &&
         email != password
     }
-    // --- LOGIN FORM VALIDATION ---
+
     var isLoginFormValid: Bool {
         Validators.isValidEmail(email) && !password.isEmpty
     }
@@ -47,7 +48,7 @@ class AuthViewModel: ObservableObject {
     
     func signUpWithFirebase(confirmPassword: String) {
         guard password == confirmPassword else {
-            self.authError = "Пароли не совпадают"; self.showAuthErrorAlert = true; return
+            self.authError = "Passwords do not match."; self.showAuthErrorAlert = true; return
         }
         isLoading = true
         Task {
@@ -55,7 +56,7 @@ class AuthViewModel: ObservableObject {
                 let authResult = try await Auth.auth().createUser(withEmail: email, password: password)
                 try await authResult.user.sendEmailVerification()
                 self.isLoading = false
-                self.authError = "Письмо для подтверждения отправлено на \(self.email). Пожалуйста, проверьте вашу почту."
+                self.authError = "A verification email has been sent to \(self.email). Please check your inbox."
                 self.showVerificationAlert = true
             } catch let error as NSError {
                 self.isLoading = false; self.handleFirebaseAuthError(error); self.showAuthErrorAlert = true
@@ -70,7 +71,7 @@ class AuthViewModel: ObservableObject {
                 let authResult = try await Auth.auth().signIn(withEmail: email, password: password)
                 
                 guard authResult.user.isEmailVerified else {
-                    self.isLoading = false; self.authError = "Ваш email не подтвержден."; self.showAuthErrorAlert = true; return
+                    self.isLoading = false; self.authError = "Your email has not been verified."; self.showAuthErrorAlert = true; return
                 }
                 
                 let authModel = AuthDataResultModel(uid: authResult.user.uid, email: authResult.user.email)
@@ -78,18 +79,18 @@ class AuthViewModel: ObservableObject {
                 
                 self.isLoading = false
                 
-                // "Умная" логика маршрутизации
+                // Smart routing logic after login: directs the user to the next appropriate
+                // step in the onboarding process if their profile is incomplete.
                 if user.name != nil && !user.name!.isEmpty {
-                    // Имя есть, теперь проверяем фото
                     if user.profileImageURL != nil && !user.profileImageURL!.isEmpty {
-                        // Имя и фото есть -> на главный экран
+                        // Name and photo exist -> go to main app
                         self.shouldNavigateToMainApp = true
                     } else {
-                        // Имя есть, а фото нет -> на экран добавления фото
+                        // Name exists, but no photo -> go to add profile pic screen
                         self.shouldNavigateToAddProfilePic = true
                     }
                 } else {
-                    // Имени нет -> на экран ввода деталей
+                    // Name does not exist -> go to enter profile details screen
                     self.shouldNavigateToProfileDetails = true
                 }
                 
@@ -100,7 +101,7 @@ class AuthViewModel: ObservableObject {
     }
     
     // MARK: - Profile Setup
-    // Теперь saveUserNameAndBirthDate не принимает параметры, а использует состояния
+    
     func saveUserNameAndBirthDate() async {
         isLoading = true
         do {
@@ -108,7 +109,7 @@ class AuthViewModel: ObservableObject {
             try await UserManager.shared.updateUserNameAndBirthDate(userId: userID, name: name, birthDate: birthDate)
             self.shouldNavigateToAddProfilePic = true
         } catch {
-            self.authError = "Не удалось сохранить данные: \(error.localizedDescription)"
+            self.authError = "Failed to save profile data: \(error.localizedDescription)"
             self.showAuthErrorAlert = true
         }
         isLoading = false
@@ -127,7 +128,7 @@ class AuthViewModel: ObservableObject {
             self.shouldNavigateToMainApp = true
         } catch {
             self.isLoading = false
-            self.authError = "Не удалось обновить профиль: \(error.localizedDescription)"
+            self.authError = "Failed to update profile: \(error.localizedDescription)"
             self.showAuthErrorAlert = true
         }
     }
@@ -136,7 +137,7 @@ class AuthViewModel: ObservableObject {
     
     func sendVerificationCode() {
         isLoading = true
-        print("Отправка кода на номер: \(phoneNumber)")
+        print("Sending code to number: \(phoneNumber)")
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { self.isLoading = false }
     }
 
@@ -147,7 +148,7 @@ class AuthViewModel: ObservableObject {
             if self.verificationCode == "1234" {
                 self.shouldNavigateToProfileDetails = true
             } else {
-                self.authError = "Неверный код"
+                self.authError = "Invalid code"
                 self.showAuthErrorAlert = true
             }
         }
@@ -157,21 +158,21 @@ class AuthViewModel: ObservableObject {
     
     private func handleFirebaseAuthError(_ error: NSError) {
         guard let errorCode = AuthErrorCode(rawValue: error.code) else {
-            self.authError = "Произошла неизвестная ошибка. Пожалуйста, попробуйте позже."
+            self.authError = "An unknown error occurred. Please try again later."
             return
         }
         
         switch errorCode {
         case .invalidEmail:
-            self.authError = "Пожалуйста, введите корректный адрес электронной почты."
+            self.authError = "Please enter a valid email address."
         case .emailAlreadyInUse:
-            self.authError = "Этот адрес электронной почты уже используется другим аккаунтом."
+            self.authError = "This email address is already in use by another account."
         case .weakPassword:
-            self.authError = "Пароль слишком слабый. Он должен содержать не менее 6 символов."
+            self.authError = "The password is too weak. It must be at least 6 characters long."
         case .wrongPassword, .userNotFound, .invalidCredential:
-            self.authError = "Неправильный email или пароль."
+            self.authError = "Incorrect email or password."
         default:
-            self.authError = "Произошла неизвестная ошибка. Пожалуйста, попробуйте позже."
+            self.authError = "An unknown error occurred. Please try again later."
         }
     }
 }

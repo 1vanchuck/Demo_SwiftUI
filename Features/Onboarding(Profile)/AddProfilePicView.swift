@@ -2,22 +2,29 @@ import SwiftUI
 import PhotosUI
 
 struct AddProfilePicView: View {
-    // 1. Получаем ViewModel из общего окружения
     @EnvironmentObject var viewModel: AuthViewModel
     
     @State private var selectedPhotoItem: PhotosPickerItem? = nil
     @State private var profileImage: UIImage? = nil
+    
+    let brandPrimaryColor = Color(red: 0.45, green: 0.3, blue: 0.8)
 
     var body: some View {
         ZStack {
-            VStack(spacing: 30) {
-                Text("Add a profile pic")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
+            VStack(spacing: 20) {
                 
-                Text("So other people can see you on the guest list")
-                    .foregroundStyle(.gray)
-                    .multilineTextAlignment(.center)
+                VStack {
+                    Text("Add a profile pic")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                    
+                    Text("So other people can see you on the guest list")
+                        .font(.subheadline)
+                        .foregroundStyle(.gray)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal)
+                }
+                .padding(.vertical, 20)
 
                 PhotosPicker(selection: $selectedPhotoItem, matching: .images) {
                     ZStack(alignment: .bottomTrailing) {
@@ -36,17 +43,16 @@ struct AddProfilePicView: View {
                                     )
                             }
                         }
-                        .frame(width: 150, height: 150)
+                        .frame(width: 200, height: 200)
                         .clipShape(Circle())
                         
                         Image(systemName: "camera.fill")
                             .font(.title2)
                             .foregroundStyle(.white)
                             .frame(width: 50, height: 50)
-                            .background(Color.purple)
+                            .background(brandPrimaryColor)
                             .clipShape(Circle())
-                            .overlay(Circle().stroke(Color(.systemBackground), lineWidth: 4))
-                            .offset(x: -5, y: -5)
+                            .overlay(Circle().stroke(Color(.systemGroupedBackground), lineWidth: 4))
                     }
                 }
                 .onChange(of: selectedPhotoItem) {
@@ -58,13 +64,23 @@ struct AddProfilePicView: View {
                 }
 
                 HStack(spacing: 15) {
-                    Image(systemName: "lightbulb.fill").foregroundStyle(.yellow)
-                    VStack(alignment: .leading) {
+                    Image(systemName: "lightbulb.fill")
+                        .foregroundStyle(brandPrimaryColor)
+                        .font(.title2)
+                    VStack(alignment: .leading, spacing: 2) {
                         Text("Pro tip").fontWeight(.bold)
                         Text("You're 10x more likely to get invited to parties if you have a profile picture 😉")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
                     }
                 }
-                .padding().background(Color(.secondarySystemBackground)).cornerRadius(10)
+                .padding()
+                .background(brandPrimaryColor.opacity(0.1))
+                .cornerRadius(12)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(brandPrimaryColor.opacity(0.3), lineWidth: 1)
+                )
                 
                 Spacer()
 
@@ -76,11 +92,12 @@ struct AddProfilePicView: View {
                 .fontWeight(.semibold)
                 .frame(maxWidth: .infinity)
                 .padding()
-                .background(Color.purple)
+                .background(brandPrimaryColor)
                 .foregroundStyle(.white)
                 .cornerRadius(15)
             }
             .padding()
+            .background(Color(.systemGroupedBackground).ignoresSafeArea())
             .navigationBarBackButtonHidden(true)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -89,12 +106,11 @@ struct AddProfilePicView: View {
                             await viewModel.completeProfileSetup(image: nil)
                         }
                     }
-                    .foregroundColor(.primary)
+                    .foregroundColor(brandPrimaryColor)
                 }
             }
-            // Модификатор .alert здесь больше не нужен
             .navigationDestination(isPresented: $viewModel.shouldNavigateToMainApp) {
-                MainView()
+                 MainView()
             }
             
             if viewModel.isLoading {
@@ -108,7 +124,6 @@ struct AddProfilePicView: View {
 #Preview {
     NavigationStack {
         AddProfilePicView()
-            // Для превью нужно вручную "положить" ViewModel в окружение
             .environmentObject(AuthViewModel())
     }
 }

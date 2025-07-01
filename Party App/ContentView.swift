@@ -12,7 +12,7 @@ struct ContentView: View {
                 NavigationStack { WelcomeView() }
             }
         }
-        .alert("Ошибка", isPresented: $authViewModel.showAuthErrorAlert) {
+        .alert("Error", isPresented: $authViewModel.showAuthErrorAlert) {
             Button("OK") { }
         } message: {
             Text(authViewModel.authError)

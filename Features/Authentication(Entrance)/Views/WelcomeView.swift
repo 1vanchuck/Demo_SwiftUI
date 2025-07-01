@@ -10,11 +10,11 @@ struct WelcomeView: View {
             
             VStack(spacing: 15) {
                 NavigationLink(destination: EnterPhoneNumberView()) {
-                    Text("Продолжить с номером телефона")
+                    Text("Continue with Phone Number")
                         .fontWeight(.semibold).frame(maxWidth: .infinity).padding().background(Color.white.opacity(0.2)).foregroundStyle(.white).cornerRadius(15)
                 }
                 NavigationLink(destination: LoginView()) {
-                    Text("Продолжить с Email")
+                    Text("Continue with Email")
                         .fontWeight(.semibold).frame(maxWidth: .infinity).padding().background(Color.white).foregroundStyle(.black).cornerRadius(15)
                 }
                 Text("By continuing, you agree to our Privacy Policy and Terms of Service.")

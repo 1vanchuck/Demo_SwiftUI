@@ -6,18 +6,37 @@ struct SettingsView: View {
     var body: some View {
         List {
             Section {
-                NavigationLink("Account Settings") {
-                    // Заглушка для будущего экрана
-                    Text("Account Settings Screen")
+                NavigationLink(destination: Text("Account Settings Screen")) {
+                    Label("Account Settings", systemImage: "gearshape")
                 }
-                NavigationLink("Notifications") {
-                    Text("Notifications Screen")
+                NavigationLink(destination: Text("Notifications Screen")) {
+                    Label("Notifications", systemImage: "bell.badge")
+                }
+                NavigationLink(destination: Text("Calendar Sync Screen")) {
+                    Label("Calendar Sync Preferences", systemImage: "calendar")
+                }
+                NavigationLink(destination: Text("Accessibility Screen")) {
+                    Label("Accessibility", systemImage: "figure.walk.circle")
+                }
+                NavigationLink(destination: Text("Customize App Icon Screen")) {
+                    Label("Customize App Icon", systemImage: "app.badge")
                 }
             }
             
             Section {
-                Button("Log out", role: .destructive) {
+                NavigationLink(destination: Text("Help Screen")) {
+                    Label("Help", systemImage: "questionmark.circle")
+                }
+                NavigationLink(destination: Text("About Screen")) {
+                    Label("About", systemImage: "info.circle")
+                }
+            }
+            
+            Section {
+                Button(role: .destructive) {
                     authManager.signOut()
+                } label: {
+                    Label("Log out", systemImage: "rectangle.portrait.and.arrow.right")
                 }
             }
         }
@@ -26,8 +45,9 @@ struct SettingsView: View {
     }
 }
 
-struct SettingsView_Previews: PreviewProvider {
-    static var previews: some View {
+#Preview {
+    NavigationStack {
         SettingsView()
+            .environmentObject(AuthManager())
     }
 }

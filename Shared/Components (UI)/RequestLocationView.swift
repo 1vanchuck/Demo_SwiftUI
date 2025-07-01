@@ -1,9 +1,8 @@
 import SwiftUI
 import CoreLocation
 
-// View для запроса разрешения
+/// A view to request location permission from the user.
 struct RequestLocationView: View {
-    // Получаем locationManager для вызова функции запроса
     @ObservedObject var locationManager: LocationManager
     
     var body: some View {
@@ -14,12 +13,12 @@ struct RequestLocationView: View {
                 .font(.system(size: 100))
                 .foregroundColor(.purple.opacity(0.8))
             
-            Text("Требуется доступ к геолокации")
+            Text("Location Access Required")
                 .font(.title2).bold()
                 .multilineTextAlignment(.center)
                 .padding(.top)
             
-            Text("Нам нужна ваша геолокация, чтобы показывать вас на карте и находить ивенты поблизости.")
+            Text("We need your location to show you on the map and help you find nearby events.")
                 .font(.subheadline)
                 .multilineTextAlignment(.center)
                 .foregroundColor(.secondary)
@@ -27,7 +26,7 @@ struct RequestLocationView: View {
             
             Spacer()
             
-            Button("Разрешить доступ") {
+            Button("Allow Access") {
                 locationManager.requestLocationPermission()
             }
             .fontWeight(.semibold)

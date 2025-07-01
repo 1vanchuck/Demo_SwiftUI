@@ -17,9 +17,14 @@ struct EmailInputView: View {
                 .padding()
                 .background(Color(.secondarySystemBackground))
                 .cornerRadius(10)
+                .tint(Color(red: 0.45, green: 0.3, blue: 0.8))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(Color.gray.opacity(0.4), lineWidth: 1)
+                )
             
             if !email.isEmpty && !isValid {
-                Text("Неверный формат email")
+                Text("Invalid email format")
                     .font(.caption)
                     .foregroundColor(.red)
                     .padding(.horizontal, 4)
@@ -49,6 +54,11 @@ struct PasswordInputView: View {
                 .padding()
                 .background(Color(.secondarySystemBackground))
                 .cornerRadius(10)
+                .tint(Color(red: 0.45, green: 0.3, blue: 0.8))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(Color.gray.opacity(0.4), lineWidth: 1)
+                )
                 
                 Button(action: { showPassword.toggle() }) {
                     Image(systemName: showPassword ? "eye.slash" : "eye")
@@ -56,9 +66,9 @@ struct PasswordInputView: View {
                         .padding(.trailing, 12)
                 }
             }
-
+            
             if !password.isEmpty && password.count < 8 {
-                Text("Пароль должен быть не короче 8 символов")
+                Text("Password must be at least 8 characters")
                     .font(.caption)
                     .foregroundColor(.red)
                     .padding(.horizontal, 4)
@@ -80,14 +90,19 @@ struct ConfirmPasswordInputView: View {
             ZStack(alignment: .trailing) {
                 Group {
                     if showConfirmPassword {
-                        TextField("Подтвердите пароль", text: $confirmationPassword)
+                        TextField("Confirm Password", text: $confirmationPassword)
                     } else {
-                        SecureField("Подтвердите пароль", text: $confirmationPassword)
+                        SecureField("Confirm Password", text: $confirmationPassword)
                     }
                 }
                 .padding()
                 .background(Color(.secondarySystemBackground))
                 .cornerRadius(10)
+                .tint(Color(red: 0.45, green: 0.3, blue: 0.8))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(Color.gray.opacity(0.4), lineWidth: 1)
+                )
                 
                 Button(action: { showConfirmPassword.toggle() }) {
                     Image(systemName: showConfirmPassword ? "eye.slash" : "eye")
@@ -97,7 +112,7 @@ struct ConfirmPasswordInputView: View {
             }
             
             if !confirmationPassword.isEmpty && originalPassword != confirmationPassword {
-                Text("Пароли не совпадают")
+                Text("Passwords do not match")
                     .font(.caption)
                     .foregroundColor(.red)
                     .padding(.horizontal, 4)

@@ -9,17 +9,16 @@ final class StorageManager {
     
     private let storage = Storage.storage().reference()
     
-    // Ссылка на папку с аватарами пользователей
+    // A reference to the Cloud Storage folder for user profile pictures.
     private var profilePicsReference: StorageReference {
         storage.child("profile_pics")
     }
     
-    // НОВАЯ ССЫЛКА на папку с картинками ивентов
+    // A reference to the Cloud Storage folder for event cover images.
     private var eventImagesReference: StorageReference {
         storage.child("event_images")
     }
     
-    // Старая функция для загрузки аватара
     func uploadProfilePic(image: UIImage, forUserID userID: String) async throws -> URL {
         guard let imageData = image.jpegData(compressionQuality: 0.8) else { throw URLError(.cannotCreateFile) }
         let metadata = StorageMetadata()
@@ -29,12 +28,11 @@ final class StorageManager {
         return try await fileRef.downloadURL()
     }
     
-    // НОВАЯ ФУНКЦИЯ для загрузки картинки ивента
+    /// Uploads an image for a specific event.
     func uploadEventImage(image: UIImage, eventId: String) async throws -> URL {
         guard let imageData = image.jpegData(compressionQuality: 0.8) else { throw URLError(.cannotCreateFile) }
         let metadata = StorageMetadata()
         metadata.contentType = "image/jpeg"
-        // Генерируем уникальное имя файла для картинки ивента
         let fileRef = eventImagesReference.child("\(eventId).jpg")
         _ = try await fileRef.putDataAsync(imageData, metadata: metadata)
         return try await fileRef.downloadURL()

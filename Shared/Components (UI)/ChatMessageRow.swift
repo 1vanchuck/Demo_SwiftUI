@@ -1,5 +1,3 @@
-// file: ChatMessageRow.swift
-
 import SwiftUI
 
 struct ChatMessageRow: View {
@@ -22,7 +20,7 @@ struct ChatMessageRow: View {
                 
                 Text(message.text)
                 
-                // ИЗМЕНЕНИЕ: Добавляем HStack для времени и галочки
+                // Grouping the timestamp and read receipt checkmark.
                 HStack(spacing: 8) {
                     Spacer()
                     Text(message.timestamp.formatted(.dateTime.hour().minute()))
@@ -40,7 +38,7 @@ struct ChatMessageRow: View {
             .padding(.vertical, 8)
             .background(isFromCurrentUser ? .purple : Color(.secondarySystemBackground))
             .foregroundColor(isFromCurrentUser ? .white : .primary)
-            // ИЗМЕНЕНИЕ: Увеличиваем радиус скругления для "пузыря"
+            // Using a continuous corner radius for a softer, more "bubbly" look.
             .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
             .frame(maxWidth: 300, alignment: isFromCurrentUser ? .trailing : .leading)
             

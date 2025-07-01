@@ -4,55 +4,50 @@ import Combine
 @MainActor
 class ChatViewModel: ObservableObject {
     
-    // MARK: - Published Properties
     @Published var messages: [ChatMessage] = []
     @Published var messageText: String = ""
     
-    // Этот объект больше не будет меняться, поэтому делаем его let
+    // The event is a constant for this ViewModel's lifecycle.
     let event: Event
     
     private var messagesListenerTask: Task<Void, Error>?
-    
-    // MARK: - Initializer & Deinitializer
     
     init(event: Event) {
         self.event = event
     }
     
     deinit {
-        // Отменяем задачу, когда View уничтожается
+        // It's crucial to cancel the listening task when the view is dismissed
+        // to prevent memory leaks and unnecessary background work.
         messagesListenerTask?.cancel()
         print("ChatViewModel deinitialized and listener task cancelled.")
     }
     
-    // MARK: - Public Methods
-    
-    /// Начинает прослушивание сообщений. Вызывается из View.
+    /// Starts listening for real-time message updates from Firestore.
+    /// This should be called when the view appears.
     func startListeningForMessages() {
-        // Проверяем, что у ивента есть ID
         guard let eventId = event.id else {
             print("Error: Event ID is nil, cannot listen for messages.")
             return
         }
         
-        // Отменяем предыдущего слушателя, если он был
+        // Cancel any previous listener before starting a new one.
         messagesListenerTask?.cancel()
         
-        // Запускаем новую задачу в фоне
         messagesListenerTask = Task {
             for try await updatedMessages in ChatManager.shared.listenForMessages(eventId: eventId) {
-                // Каждый раз, когда приходят новые данные, обновляем наш массив
+                // The UI will automatically update whenever the `messages` array changes.
                 self.messages = updatedMessages
             }
         }
     }
     
-    /// Отправляет сообщение от текущего пользователя
+    /// Sends a new message from the current user.
     func sendMessage(sender: DBUser) async {
         guard !messageText.trimmingCharacters(in: .whitespaces).isEmpty, let eventId = event.id else { return }
         
         let textToSend = messageText
-        self.messageText = "" // Сбрасываем поле ввода сразу
+        self.messageText = "" // Clear the input field immediately for a better UX.
         
         do {
             try await ChatManager.shared.sendMessage(
@@ -62,7 +57,7 @@ class ChatViewModel: ObservableObject {
             )
         } catch {
             print("Error sending message: \(error.localizedDescription)")
-            // Возвращаем текст обратно, если отправка не удалась
+            // If sending fails, restore the text so the user can try again.
             self.messageText = textToSend
         }
     }

@@ -1,7 +1,7 @@
 import SwiftUI
-import UIKit // Импортируем UIKit для открытия настроек
+import UIKit
 
-// View для случая, когда доступ запрещен
+/// A view shown when location access has been denied by the user.
 struct LocationDeniedView: View {
     var body: some View {
         VStack(spacing: 15) {
@@ -11,12 +11,12 @@ struct LocationDeniedView: View {
                 .font(.system(size: 100))
                 .foregroundColor(.gray)
             
-            Text("Доступ к геолокации запрещен")
+            Text("Location Access Denied")
                 .font(.title2).bold()
                 .multilineTextAlignment(.center)
                 .padding(.top)
             
-            Text("Чтобы использовать функции карты, пожалуйста, включите доступ к геолокации для этого приложения в Настройках вашего iPhone.")
+            Text("To use map features, please enable location access for this app in your iPhone's Settings.")
                 .font(.subheadline)
                 .multilineTextAlignment(.center)
                 .foregroundColor(.secondary)
@@ -24,9 +24,9 @@ struct LocationDeniedView: View {
             
             Spacer()
             
-            // Кнопка, которая открывает системные настройки приложения
+            // This button opens the app's specific page in the system Settings.
             if let url = URL(string: UIApplication.openSettingsURLString) {
-                Button("Открыть Настройки") {
+                Button("Open Settings") {
                     UIApplication.shared.open(url)
                 }
                 .fontWeight(.semibold)

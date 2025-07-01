@@ -1,5 +1,3 @@
-// file: EventChatView.swift (ФИНАЛЬНАЯ ВЕРСИЯ С РЕЖИМОМ "МЕССЕНДЖЕРА")
-
 import SwiftUI
 
 struct EventChatView: View {
@@ -15,7 +13,6 @@ struct EventChatView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            // Список сообщений (без изменений)
             ScrollViewReader { proxy in
                 ScrollView {
                     VStack {
@@ -34,7 +31,6 @@ struct EventChatView: View {
                 }
             }
             
-            // Наш messageInputBar
             messageInputBar
         }
         .navigationBarTitleDisplayMode(.inline)
@@ -44,12 +40,14 @@ struct EventChatView: View {
         .onAppear {
             viewModel.startListeningForMessages()
             Task {
+                // We need the full user profile to send messages with sender details.
                 guard let currentUserId = authManager.user?.uid else { return }
                 self.currentUserProfile = try? await UserManager.shared.getUser(userId: currentUserId)
             }
         }
         .toolbar {
             ToolbarItem(placement: .principal) {
+                // The toolbar title is a button that leads to the event details.
                 Button(action: { self.showEventDetail = true }) {
                     VStack {
                         Text(viewModel.event.title)
@@ -79,8 +77,6 @@ struct EventChatView: View {
         }
     }
     
-    // Вспомогательные функции
-    
     private var messageInputBar: some View {
         HStack(alignment: .bottom, spacing: 12) {
             TextField("Message...", text: $viewModel.messageText, axis: .vertical)
@@ -92,10 +88,8 @@ struct EventChatView: View {
                     RoundedRectangle(cornerRadius: 20, style: .continuous)
                         .stroke(Color.secondary.opacity(0.5), lineWidth: 1)
                 )
-            // Здесь НЕТ модификатора .onSubmit
 
             Button {
-                // Отправка происходит только по нажатию этой кнопки
                 sendMessage()
             } label: {
                 Image(systemName: "paperplane.fill")
@@ -128,5 +122,20 @@ struct EventChatView: View {
         } else {
             proxy.scrollTo(lastMessageId, anchor: .bottom)
         }
+    }
+}
+#Preview {
+    NavigationStack {
+        let previewEvent = Event(
+            title: "Beach Party",
+            eventDate: Date(),
+            locationName: "Cascais",
+            creatorId: "user123"
+        )
+        
+        let authManager = AuthManager()
+        
+        EventChatView(event: previewEvent)
+            .environmentObject(authManager)
     }
 }

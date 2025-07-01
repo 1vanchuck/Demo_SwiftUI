@@ -1,39 +1,39 @@
 import SwiftUI
 
 struct MainView: View {
-    // Состояния для таб-бара
     @State private var selectedTab = 0
     @State private var isShowingCreateSheet = false
     private let createTabTag = 1
     
-    // СОЗДАЕМ VIEWMODEL ЗДЕСЬ
+    // The main EventsViewModel is created here and owns the event data for the primary tabs.
     @StateObject private var eventsViewModel = EventsViewModel()
 
     var body: some View {
         TabView(selection: $selectedTab) {
             MapView()
-                .tabItem { Label("Карта", systemImage: "map") }
+                .tabItem { Label("Map", systemImage: "map") }
                 .tag(0)
 
             Color.clear
-                .tabItem { Label("Создать", systemImage: "plus.circle.fill") }
+                .tabItem { Label("Create", systemImage: "plus.circle.fill") }
                 .tag(createTabTag)
             
             MyEventsView()
-                .tabItem { Label("Мои", systemImage: "calendar") }
+                .tabItem { Label("My Events", systemImage: "calendar") }
                 .tag(2)
 
             ProfileView()
-                .tabItem { Label("Профиль", systemImage: "person.crop.circle") }
+                .tabItem { Label("Profile", systemImage: "person.crop.circle") }
                 .tag(3)
         }
-        // ВНЕДРЯЕМ VIEWMODEL В ОКРУЖЕНИЕ
-        // Теперь он доступен всем вкладкам
+        // By injecting the ViewModel into the environment, we make it accessible
+        // to all child views, ensuring they share the same state.
         .environmentObject(eventsViewModel)
         .onChange(of: selectedTab) { _, newTab in
+            // This is a clever trick to use a tab bar item to trigger a modal sheet.
             if newTab == createTabTag {
                 self.isShowingCreateSheet = true
-                self.selectedTab = 0
+                self.selectedTab = 0 // Reset selection to the first tab.
             }
         }
         .fullScreenCover(isPresented: $isShowingCreateSheet) {
@@ -41,3 +41,13 @@ struct MainView: View {
         }
     }
 }
+
+#Preview {
+    let authManager = AuthManager()
+    let locationManager = LocationManager()
+
+    MainView()
+        .environmentObject(authManager)
+        .environmentObject(locationManager)
+}
+

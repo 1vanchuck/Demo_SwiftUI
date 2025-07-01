@@ -1,9 +1,6 @@
-// file: MyEventsView.swift
-
 import SwiftUI
 
 struct MyEventsView: View {
-    // Получаем ViewModel и AuthManager из окружения
     @EnvironmentObject var viewModel: EventsViewModel
     @EnvironmentObject var authManager: AuthManager
     
@@ -13,13 +10,14 @@ struct MyEventsView: View {
                 if viewModel.isLoading && viewModel.myEvents.isEmpty {
                     ProgressView()
                 } else if viewModel.myEvents.isEmpty {
+                    // Empty state view to guide the user.
                     VStack(spacing: 10) {
                         Image(systemName: "calendar.badge.plus")
                             .font(.system(size: 50))
                             .foregroundColor(.secondary)
-                        Text("У вас пока нет ивентов")
+                        Text("You have no events yet")
                             .font(.headline)
-                        Text("Перейдите на вкладку '+' чтобы создать свой первый ивент.")
+                        Text("Go to the '+' tab to create your first event.")
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)
@@ -27,16 +25,16 @@ struct MyEventsView: View {
                     }
                 } else {
                     List {
-                        // Для каждой строки в списке мы передаем замыкание onAction
+                        // The onAction closure passes the user's choice from the context menu
+                        // back to this view for handling.
                         ForEach(viewModel.myEvents) { event in
                             MyEventsListRow(event: event) { action in
-                                // Вся логика обработки нажатий теперь здесь
                                 handle(action: action, for: event)
                             }
                         }
                     }
                     .listStyle(.plain)
-                    // Основной маршрут навигации из списка теперь ведет напрямую в чат
+                    // The primary navigation destination from the list is now the event chat.
                     .navigationDestination(for: Event.self) { event in
                         EventChatView(event: event)
                     }
@@ -47,7 +45,7 @@ struct MyEventsView: View {
                     }
                 }
             }
-            .navigationTitle("Мои ивенты")
+            .navigationTitle("My Events")
             .onAppear {
                 if let userId = authManager.user?.uid, viewModel.myEvents.isEmpty {
                     Task {
@@ -58,7 +56,7 @@ struct MyEventsView: View {
         }
     }
     
-    // Вспомогательная функция для обработки действий из контекстного меню
+    /// A helper function to process actions from the context menu.
     private func handle(action: EventAction, for event: Event) {
         switch action {
         case .delete:
@@ -75,11 +73,10 @@ struct MyEventsView: View {
 }
 
 #Preview {
-    // Для превью нужно предоставить окружение
     let authManager = AuthManager()
     let eventsViewModel = EventsViewModel()
     
-    // Можно добавить фейковый ивент для отображения в превью
+    // For a more realistic preview, you could inject a dummy event.
     // let previewEvent = Event(title: "Preview Event", eventDate: Date(), locationName: "SwiftUI", creatorId: "previewUser")
     // eventsViewModel.myEvents = [previewEvent]
     

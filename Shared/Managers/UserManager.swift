@@ -1,10 +1,9 @@
 import Foundation
 import FirebaseFirestore
 
-// ИЗМЕНЕНИЕ: Добавляем соответствие протоколу Identifiable
+// By conforming to Identifiable, we can use DBUser directly in SwiftUI lists and ForEach loops.
 struct DBUser: Codable, Identifiable {
-    // Явно указываем, что свойство 'id' будет нашим идентификатором
-    // Оно совпадает с userId, что идеально для SwiftUI
+    // We explicitly map the `id` property to `userId` for SwiftUI's benefit.
     var id: String { userId }
     
     @DocumentID var documentId: String?
@@ -16,7 +15,8 @@ struct DBUser: Codable, Identifiable {
     var profileImageURL: String?
     let dateCreated: Date?
     
-    // Добавляем CodingKeys, чтобы @DocumentID не конфликтовал с нашим 'id'
+    // We need CodingKeys to ensure our custom `id` property doesn't interfere
+    // with the encoding/decoding of the stored properties.
     enum CodingKeys: String, CodingKey {
         case documentId
         case userId
@@ -68,7 +68,7 @@ final class UserManager {
         try await userDocument(userId: userId).getDocument(as: DBUser.self)
     }
     
-    // Новая функция для загрузки нескольких пользователей по их ID
+    /// Fetches multiple user profiles based on an array of user IDs.
     func fetchUsers(withIDs uids: [String]) async throws -> [DBUser] {
         if uids.isEmpty { return [] }
         

@@ -3,51 +3,85 @@ import SwiftUI
 struct SignUpView: View {
     @EnvironmentObject var viewModel: AuthViewModel
     @Environment(\.dismiss) var dismiss
-    
-    // Оставляем только одно локальное состояние для подтверждения пароля
     @State private var confirmPassword = ""
-    
+
+    let brandPrimaryColor = Color(red: 0.45, green: 0.3, blue: 0.8)
+
     var body: some View {
         ZStack {
             VStack(spacing: 15) {
+                Image(systemName: "person.crop.circle.badge.plus")
+                    .font(.system(size: 50))
+                    .foregroundColor(brandPrimaryColor)
+                    .padding(.bottom, 10)
                 
-                // ИСПОЛЬЗУЕМ НАШИ НОВЫЕ КОМПОНЕНТЫ
+                Text("Create Account")
+                    .font(.largeTitle)
+                    .fontWeight(.bold)
+                    .foregroundColor(.primary)
+                
+                Text("Let's get you started with the party!")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .padding(.bottom, 20)
                 EmailInputView(email: $viewModel.email)
+                PasswordInputView(password: $viewModel.password, title: "Password")
+                ConfirmPasswordInputView(
+                    originalPassword: viewModel.password,
+                    confirmationPassword: $confirmPassword
+                )
                 
-                PasswordInputView(password: $viewModel.password, title: "Пароль")
-                
-                ConfirmPasswordInputView(originalPassword: viewModel.password,
-                                           confirmationPassword: $confirmPassword)
-                
-                // Проверка на совпадение email и пароля
                 if !viewModel.email.isEmpty && !viewModel.password.isEmpty && viewModel.email == viewModel.password {
-                    Text("Email и пароль не должны совпадать.")
-                        .font(.caption).foregroundColor(.red).frame(maxWidth: .infinity, alignment: .leading).padding(.horizontal)
+                    Text("Email and password should not be the same.")
+                        .font(.caption)
+                        .foregroundColor(.red)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal)
                 }
                 
                 Spacer()
                 
-                Button("Создать аккаунт") {
+                Button("Create Account") {
                     viewModel.signUpWithFirebase(confirmPassword: confirmPassword)
                 }
                 .fontWeight(.semibold)
                 .frame(maxWidth: .infinity)
                 .padding()
-                .background(isFormValid ? Color.purple : Color.gray)
+                .background(isFormValid ? brandPrimaryColor : Color.gray.opacity(0.4))
                 .foregroundStyle(.white)
                 .cornerRadius(15)
                 .disabled(!isFormValid)
+                
+                HStack {
+                    Text("Already have an account?")
+                        .foregroundStyle(.gray)
+                    Button("Sign In") {
+                        dismiss()
+                    }
+                    .fontWeight(.semibold)
+                    .tint(brandPrimaryColor)
+                }
+                .padding(.top, 5)
             }
             .padding()
+            .background(Color(.systemGroupedBackground).ignoresSafeArea()) // Фон, как у Login
             
             if viewModel.isLoading {
                 Color.black.opacity(0.4).ignoresSafeArea()
                 ProgressView().tint(.white)
             }
         }
-        .navigationTitle("Регистрация")
-        .navigationBarTitleDisplayMode(.inline)
-        .alert("Подтвердите ваш Email", isPresented: $viewModel.showVerificationAlert) {
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button { dismiss() } label: {
+                    Image(systemName: "chevron.left")
+                        .foregroundColor(brandPrimaryColor)
+                }
+            }
+        }
+        // Ваш оригинальный Alert
+        .alert("Confirm Your Email", isPresented: $viewModel.showVerificationAlert) {
             Button("OK") { dismiss() }
         } message: {
             Text(viewModel.authError)
@@ -55,7 +89,6 @@ struct SignUpView: View {
     }
     
     private var isFormValid: Bool {
-        // Логика валидации остается здесь, но теперь она проверяет все условия
         guard Validators.isValidEmail(viewModel.email),
               viewModel.password.count >= 8,
               viewModel.password == confirmPassword,
@@ -65,7 +98,6 @@ struct SignUpView: View {
         return true
     }
 }
-
 
 #Preview {
     NavigationStack {

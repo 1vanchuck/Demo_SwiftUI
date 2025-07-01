@@ -1,8 +1,5 @@
-// file: MyEventsListRow.swift
-
 import SwiftUI
 
-// Убираем .viewDetails
 enum EventAction {
     case delete
     case leave
@@ -22,22 +19,40 @@ struct MyEventsListRow: View {
         .padding(.vertical, 4)
         .listRowSeparator(.hidden)
         .contextMenu {
-            // Убрали кнопку "Детали ивента"
+            // The context menu provides different actions based on user ownership.
             if let currentUserId = authManager.user?.uid {
                 if currentUserId == event.creatorId {
                     Button(role: .destructive) {
                         onAction(.delete)
                     } label: {
-                        Label("Удалить ивент", systemImage: "trash")
+                        Label("Delete Event", systemImage: "trash")
                     }
                 } else {
                     Button(role: .destructive) {
                         onAction(.leave)
                     } label: {
-                        Label("Покинуть ивент", systemImage: "rectangle.portrait.and.arrow.right")
+                        Label("Leave Event", systemImage: "rectangle.portrait.and.arrow.right")
                     }
                 }
             }
         }
     }
 }
+
+#Preview {
+    List {
+        MyEventsListRow(
+            event: Event(
+                title: "My Awesome Event",
+                eventDate: Date(),
+                locationName: "My House",
+                creatorId: "user123"
+            ),
+            onAction: { action in
+                print("Action selected: \(action)")
+            }
+        )
+    }
+    .environmentObject(AuthManager())
+}
+

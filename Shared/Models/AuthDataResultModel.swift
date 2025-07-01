@@ -1,5 +1,3 @@
-// AuthDataResultModel.swift
-
 import Foundation
 
 struct AuthDataResultModel {

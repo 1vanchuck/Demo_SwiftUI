@@ -29,12 +29,11 @@ struct LocationPickerView: View {
 
             Image(systemName: "mappin").font(.largeTitle).foregroundColor(.red)
             
-            // Контейнер для кнопок
             VStack(spacing: 15) {
                 HStack {
                     Spacer()
                     VStack(spacing: 12) {
-                        // НОВАЯ КНОПКА
+                        // A button to re-center the map on the user's current location.
                         Button(action: {
                             if let userLocation = locationManager.location {
                                 withAnimation {
@@ -46,7 +45,7 @@ struct LocationPickerView: View {
                                 .font(.headline).padding(10)
                         }
                         
-                        // Старые кнопки зума
+                        // Standard map zoom controls.
                         Button(action: { zoom(factor: 0.5) }) { Image(systemName: "plus").font(.headline).padding(10) }
                         Button(action: { zoom(factor: 2.0) }) { Image(systemName: "minus").font(.headline).padding(10) }
                     }

@@ -1,9 +1,7 @@
 import SwiftUI
 
 struct EventDetailView: View {
-    // Создаем ViewModel при инициализации этого View, передавая ему конкретный ивент
     @StateObject private var viewModel: EventDetailViewModel
-    // Получаем AuthManager из окружения для доступа к ID текущего пользователя
     @EnvironmentObject var authManager: AuthManager
 
     init(event: Event) {
@@ -13,7 +11,7 @@ struct EventDetailView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                // 1. Обложка ивента
+                // Event Cover Image
                 AsyncImage(url: URL(string: viewModel.event.imageURL ?? "")) { image in
                     image.resizable().aspectRatio(contentMode: .fill)
                 } placeholder: {
@@ -21,7 +19,6 @@ struct EventDetailView: View {
                 }
                 .frame(height: 300)
                 
-                // 2. Блок с основной информацией
                 VStack(alignment: .leading, spacing: 16) {
                     Text(viewModel.event.title)
                         .font(.largeTitle).bold()
@@ -39,14 +36,12 @@ struct EventDetailView: View {
                 
                 Divider()
                 
-                // 3. Блок с участниками
                 VStack(alignment: .leading) {
                     Text("Who's going (\(viewModel.attendees.count))")
                         .font(.headline).padding([.top, .horizontal])
                     
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: -10) {
-                            // ИСПРАВЛЕНИЕ: Используем 'id: \.userId', чтобы ForEach работал
                             ForEach(viewModel.attendees, id: \.userId) { user in
                                 AsyncImage(url: URL(string: user.profileImageURL ?? "")) { image in
                                     image.resizable().aspectRatio(contentMode: .fill)
@@ -66,9 +61,8 @@ struct EventDetailView: View {
         }
         .ignoresSafeArea(edges: .top)
         .overlay(alignment: .bottom) {
-            // 4. Кнопка для присоединения/выхода
+            // Join/Leave Button
             if let userId = authManager.user?.uid {
-                // Не показываем кнопку создателю ивента
                 if viewModel.event.creatorId != userId {
                     rsvpButton(currentUserId: userId)
                         .padding()
@@ -77,14 +71,12 @@ struct EventDetailView: View {
             }
         }
         .onAppear {
-            // Передаем ID пользователя при появлении экрана
             viewModel.onAppear(currentUserId: authManager.user?.uid)
         }
         .navigationTitle(viewModel.event.title)
         .navigationBarTitleDisplayMode(.inline)
     }
     
-    // Вспомогательная функция для кнопки RSVP, вынесена из body
     @ViewBuilder
     private func rsvpButton(currentUserId: String) -> some View {
         if viewModel.isLoading {
@@ -106,5 +98,19 @@ struct EventDetailView: View {
                 .buttonStyle(PrimaryButtonStyle(backgroundColor: .purple))
             }
         }
+    }
+}
+
+#Preview {
+    NavigationStack {
+        var previewEvent = Event(
+            title: "Summer Music Festival",
+            eventDate: Date(),
+            locationName: "Cascais, Portugal",
+            creatorId: "user123"
+        )
+
+        EventDetailView(event: previewEvent)
+            .environmentObject(AuthManager())
     }
 }
