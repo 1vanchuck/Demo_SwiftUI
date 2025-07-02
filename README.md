@@ -34,7 +34,7 @@ This application demonstrates a wide range of modern iOS development practices a
 Key Features:
 Secure Authentication Flow: Complete, multi-step user registration and login system using Firebase Authentication.
 
-Interactive Live Map: A real-time map, powered by MapKit, allowing users to discover and browse events based on their location.
+Interactive Live Map: A real-time map, powered by MapKit.
 
 Real-Time Chat: Every event features a dedicated chat room with real-time messaging, built using Firestore Snapshot Listeners and Swift's modern concurrency features.
 
