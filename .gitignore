@@ -40,3 +40,6 @@ DerivedData/
 
 # --- macOS System Files ---
 .DS_Store
+
+# User-specific Xcode data
+**/xcuserdata/
