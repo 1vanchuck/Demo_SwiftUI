@@ -1,7 +1,8 @@
-# 1. Security
+# --- Security & Credentials ---
 GoogleService-Info.plist
+.env
 
-# 2. Hidden Business Logic
+# --- Hidden Business Logic ---
 
 # Managers
 UserManager.swift
@@ -16,3 +17,26 @@ AuthDataResultModel.swift
 
 # Helper Files
 Validators.swift
+
+# Swift Package Manager
+.build/
+Packages/
+
+# CocoaPods
+Pods/
+
+# Carthage
+Carthage/
+
+# --- Xcode Build & Cache ---
+build/
+DerivedData/
+*.hmap
+*.ipa
+*.dSYM
+*.dSYM.zip
+*.xcuserdatad
+*.xcschememanagement.plist
+
+# --- macOS System Files ---
+.DS_Store
