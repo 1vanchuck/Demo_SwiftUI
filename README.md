@@ -17,20 +17,16 @@ The code provided is sufficient to demonstrate my expertise in building a clean,
 📸 Screenshots
 Authentication Flow
 
-![Authentication Flow](Assets.xcassets/Login.jpg)
+![Authentication Flow](Login.jpg)
 
 Main App Features
 
-Interactive Map
-
-Event Chat
-
-My Events
+![Main App Features](Main.jpg)
 
 
-Экспортировать в Таблицы
 Stability & Performance
-(Сюда можно вставить скриншот из Xcode Organizer, показывающий отсутствие "крэшей" или низкое потребление ресурсов)
+
+![Stability & Performance](Test.png)
 
 ✨ Key Features & Technical Highlights
 This application demonstrates a wide range of modern iOS development practices and features.
