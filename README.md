@@ -17,11 +17,7 @@ The code provided is sufficient to demonstrate my expertise in building a clean,
 📸 Screenshots
 Authentication Flow
 
-<img width="435" alt="Screenshot 2025-07-01 at 17 23 43" src="https://github.com/user-attachments/assets/f057d559-0c8f-49a5-9a0e-29c30c01c9a0" />
-<img width="442" alt="Screenshot 2025-07-01 at 17 23 16" src="https://github.com/user-attachments/assets/8953c82f-0011-4795-98ef-68e00efda1e2" />
-<img width="436" alt="Screenshot 2025-07-01 at 17 22 54" src="https://github.com/user-attachments/assets/3dea056d-5711-4bd3-8cc5-bde582e5677e" />
-<img width="437" alt="Screenshot 2025-07-01 at 17 22 28" src="https://github.com/user-attachments/assets/199b9d54-5d24-4c64-9fed-a421a82c53eb" />
-
+![Authentication Flow](Assets.xcassets/Login.jpg)
 
 Main App Features
 
